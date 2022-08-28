@@ -11,6 +11,7 @@ class HydroProvider extends ChangeNotifier{
   /*************  constructor  ************************************************************/
   HydroProvider() {
 getFeeds();
+Future.delayed(Duration(seconds: 2)).then((value) => checkTH());
 //getLastFeeds();
   }
 
@@ -24,10 +25,13 @@ getFeeds();
   List<String> water=[];
   double tempr=50;
   double hem=50;
-  bool fan1=false;
-  bool fan2=false;
-  bool pump=false;
-  bool light=false;
+  bool isSwitchedFan1=false;
+  bool isSwitchedFan2=false;
+  bool isSwitchedPump=false;
+  bool isSwitchedLight=false;
+  bool visible=false;
+  int unread=0;
+  List<String> notification=[];
   /*************  DropDown Buttons Function  *************************************************/
   getFeeds() async{
     int i=225;
@@ -72,18 +76,75 @@ valueHem(value){
     notifyListeners();
   }
 
-  writeButtonData(value){
-    if(value=="Fan 1"){
-      fan1=!fan1;
-    }else if(value=="Fan 2"){
-      fan2=!fan2;
-    }else if(value=="Pump"){
-      pump=!pump;
-    }else if(value=="Light"){
-      light=!light;
-    }
-    ApiService.apiService.writeButtons(fan1?"1":"0",fan2?"1":"0",pump?"1":"0",light?"1":"0");
+
+  toggleSwitchFan1(bool value) {
+    isSwitchedFan1=!isSwitchedFan1;
+    ApiService.apiService.writeButtons(isSwitchedFan1?"1":"0",isSwitchedFan2?"1":"0",isSwitchedPump?"1":"0",isSwitchedLight?"1":"0");
     print("done");
+    if(isSwitchedFan1){
+      notification.add("Fan1 is on");
+    }else{
+      notification.add("Fan1 is off");
+    }
+    notifyListeners();
+
+  }
+
+  toggleSwitchFan2(bool value) {
+    isSwitchedFan2=!isSwitchedFan2;
+    ApiService.apiService.writeButtons(isSwitchedFan1?"1":"0",isSwitchedFan2?"1":"0",isSwitchedPump?"1":"0",isSwitchedLight?"1":"0");
+    print("done");
+    if(isSwitchedFan2){
+      notification.add("Fan2 is on");
+    }else{
+      notification.add("Fan2 is off");
+    }
+    notifyListeners();
+
+
+  }
+
+
+  toggleSwitchLight(bool value) {
+
+    isSwitchedLight=!isSwitchedLight;
+    ApiService.apiService.writeButtons(isSwitchedFan1?"1":"0",isSwitchedFan2?"1":"0",isSwitchedPump?"1":"0",isSwitchedLight?"1":"0");
+    print("done");
+    if(isSwitchedLight){
+      notification.add("light is on");
+    }else{
+      notification.add("light is off");
+    }
+    notifyListeners();
+
+  }
+
+  toggleSwitchPump(bool value) {
+    isSwitchedPump=!isSwitchedPump;
+    ApiService.apiService.writeButtons(isSwitchedFan1?"1":"0",isSwitchedFan2?"1":"0",isSwitchedPump?"1":"0",isSwitchedLight?"1":"0");
+    print("done");
+    if(isSwitchedPump){
+      notification.add("pump is on");
+    }else{
+      notification.add("pump is off");
+    }
+    notifyListeners();
+
+
+  }
+
+  changeVisibilty(){
+    this.visible=!this.visible;
     notifyListeners();
   }
+
+  checkTH(){
+    if(temp.last.subscribers.toDouble()>=25){
+      notification.add("Tempurature is more than expected");
+    }
+    if(hemditiy.last.subscribers.toDouble()>=85){
+      notification.add("hemditiy is more than expected");
+    }
   }
+
+}

@@ -18,7 +18,7 @@ class _SliderSeekState extends State<SliderSeek> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 180,
+      width: 300,
       child: Column(
         children: [
           Slider(
